@@ -82,3 +82,96 @@ ALTER TABLE "item" ADD CONSTRAINT "fk_item_cor_fundo" FOREIGN KEY ("cor_fundo_id
 ALTER TABLE "encomenda" ADD CONSTRAINT "fk_desconto_encomenda" FOREIGN KEY ("desconto_id") REFERENCES "desconto" ("id_descont") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "item" ADD CONSTRAINT "fk_item_encomenda" FOREIGN KEY ("encomenda_id") REFERENCES "encomenda" ("id_encomenda") DEFERRABLE INITIALLY IMMEDIATE;
+
+-------------------------------------------------------------------------
+
+
+Enum "tipo_contato" {
+  "CELULAR"
+  "EMAIL"
+  "WHATSAPP"
+}
+
+Table "cliente" {
+  "id_cli" INT [pk, not null, increment]
+  "cpf" varchar(11) [not null]
+  "nome" varchar(50) [not null]
+
+  Indexes {
+    cpf [unique, name: "uk_cpf"]
+  }
+}
+
+Table "contato" {
+  "id_contato" int [pk, not null]
+  "cliente_id" int [not null]
+  "tipo" tipo_contato [not null]
+  "informacao" varchar(50) [not null]
+
+  Indexes {
+    (cliente_id, tipo) [unique, name: "uk_contato"]
+  }
+}
+
+Table "cor" {
+  "id_cor" INTEGER [pk, not null, increment]
+  "desc" varchar(50) [not null]
+  "fundo" boolean [not null]
+  "letra" boolean [not null]
+}
+
+Table "material" {
+  "id_material" INTEGER [pk, not null, increment]
+  "descricao_mat" varchar(50) [not null]
+  "custo_cm2" decimal(10,2) [not null]
+  "valor_letra" decimal [not null]
+}
+
+Table "desconto" {
+  "id_descont" int [pk, not null]
+  "percentual" decimal [not null]
+  "valor_minimo" decimal [not null]
+  "valor_maximo" decimal [not null]
+}
+
+Table "placa" {
+  "placa_id" integer [pk, not null]
+  "altura" decimal [not null]
+  "largura" decimal [not null]
+  "material_id" integer [not null]
+}
+
+Table "encomenda" {
+  "id_encomenda" integer [pk, not null]
+  "data" date [not null]
+  "entrega" date [not null]
+  "desconto_id" decimal [not null]
+  "cliente_id" integer [not null]
+}
+
+Table "item" {
+  "id" integer [not null]
+  "encomenda_id" integer [not null]
+  "placa_cod" integer [not null]
+  "quantidade" integer [not null]
+  "frase" varchar(30) [not null]
+  "cor_fundo_id" integer [not null]
+  "cor_letra_id" integer [not null]
+}
+
+Ref "fk_encomenda_cliente":"cliente"."id_cli" < "encomenda"."cliente_id"
+
+Ref "fk_contato_cliente":"cliente"."id_cli" < "contato"."id_contato"
+
+Ref "fk_item_placa":"placa"."placa_id" < "item"."placa_cod"
+
+Ref "fk_placa_material":"material"."id_material" < "placa"."material_id"
+
+Ref "fk_item_cor_letra":"cor"."id_cor" < "item"."cor_letra_id"
+
+Ref "fk_item_cor_fundo":"cor"."id_cor" < "item"."cor_fundo_id"
+
+Ref "fk_desconto_encomenda":"desconto"."id_descont" < "encomenda"."desconto_id"
+
+Ref "fk_item_encomenda":"encomenda"."id_encomenda" < "item"."encomenda_id"
+
