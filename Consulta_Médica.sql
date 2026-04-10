@@ -55,3 +55,65 @@ ALTER TABLE "receita" ADD FOREIGN KEY ("id_consulta") REFERENCES "consulta" ("id
 ALTER TABLE "remedios_preescritos_receita" ADD FOREIGN KEY ("id_receita") REFERENCES "receita" ("id_receita") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "remedios_preescritos_receita" ADD FOREIGN KEY ("id_desc_remedio") REFERENCES "remedios" ("id_desc_remedio") DEFERRABLE INITIALLY IMMEDIATE;
+
+--------------------
+
+
+Table "medicos" {
+  "id_medico" int [pk, not null]
+  "nome_medico" varchar(100) [not null]
+  "id_especialidade" varchar(50) [not null]
+}
+
+Table "especialidade" {
+  "id_especialidade" int [pk, not null]
+  "funcao" varchar(100) [not null]
+  "cod_crm" varchar(50) [not null]
+}
+
+Table "paciente" {
+  "id_paciente" INT [pk, not null, increment]
+  "cpf" varchar(11) [not null]
+  "nome" varchar(100) [not null]
+  "dt_nascimento" timestamp [not null]
+  "cep" char(8) [not null]
+}
+
+Table "consulta" {
+  "id_consulta" int [pk, not null]
+  "dt_consulta" timestamp [not null]
+  "id_medico" int [not null]
+  "id_paciente" int [not null]
+}
+
+Table "receita" {
+  "id_receita" int [pk, not null]
+  "id_consulta" int [not null]
+}
+
+Table "remedios" {
+  "id_desc_remedio" int [pk, not null]
+  "nome_remedio" varchar(100) [not null]
+  "fabricante" varchar(100) [not null]
+}
+
+Table "remedios_preescritos_receita" {
+  "id_pedido" int [pk, not null]
+  "dose" float [not null]
+  "instrucoes" text [not null]
+  "id_receita" int [not null]
+  "id_desc_remedio" int [not null]
+}
+
+Ref:"paciente"."id_paciente" < "consulta"."id_paciente"
+
+Ref:"medicos"."id_medico" < "consulta"."id_medico"
+
+Ref:"medicos"."id_especialidade" < "especialidade"."id_especialidade"
+
+Ref:"consulta"."id_consulta" < "receita"."id_consulta"
+
+Ref:"receita"."id_receita" < "remedios_preescritos_receita"."id_receita"
+
+Ref:"remedios"."id_desc_remedio" < "remedios_preescritos_receita"."id_desc_remedio"
+
