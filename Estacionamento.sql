@@ -76,3 +76,89 @@ ALTER TABLE "estacionamento" ADD CONSTRAINT "fk_estacionamento_carro"
 
 ALTER TABLE "estacionamento" ADD CONSTRAINT "fk_estacionamento_vaga"
   FOREIGN KEY ("vaga_id") REFERENCES "vaga" ("id_vaga") DEFERRABLE INITIALLY IMMEDIATE;
+
+----------------------------------------------------------------------------------------
+
+Enum "contatos" {
+  "CELULAR"
+  "EMAIL"
+  "WHASTAPP"
+}
+
+Table "cliente" {
+  "id" INTEGER [pk, not null, increment]
+  "nome" varchar(50) [not null]
+  "saldo" decimal(10,2) [not null, default: 0]
+}
+
+Table "contato" {
+  "id" INTEGER [pk, not null, increment]
+  "tipo_contato" contatos [not null]
+  "cliente_id" integer [not null]
+  "informacao" varchar(50) [not null]
+
+  Indexes {
+    (tipo_contato, cliente_id) [unique, name: "uk_cliente_tipo"]
+  }
+}
+
+Table "carro" {
+  "id" INTEGER [pk, not null, increment]
+  "placa" char(7) [not null]
+  "modelo" varchar(20)
+
+  Indexes {
+    placa [unique, name: "uk_placa"]
+  }
+}
+
+Table "cliente_carro" {
+  "id" INTEGER [pk, not null, increment]
+  "cliente_id" integer [not null]
+  "carro_id" integer [not null]
+  "ativo" boolean [not null, default: true]
+
+  Indexes {
+    (cliente_id, carro_id) [unique, name: "uk_cliente_carro"]
+  }
+}
+
+Table "tipo" {
+  "id" INTEGER [pk, not null, increment]
+  "descricao" varchar(20) [not null]
+  "valor" decimal(10,2)
+}
+
+Table "vaga" {
+  "id" INTEGER [pk, not null, increment]
+  "numero" char(3) [not null]
+  "tipo_id" integer [not null]
+
+  Indexes {
+    numero [unique, name: "uk_vaga_numero"]
+  }
+}
+
+Table "estacionamento" {
+  "id" INTEGER [pk, not null, increment]
+  "cliente_carro_id" integer [not null]
+  "vaga_id" integer [not null]
+  "entrada" timestamp [not null]
+  "saida" timestamp
+
+  Indexes {
+    (cliente_carro_id, vaga_id, entrada) [unique, name: "uk_estacionamento"]
+  }
+}
+
+Ref "fk_contato_cliente":"cliente"."id" < "contato"."cliente_id"
+
+Ref "fk_cliente_carro_cliente":"cliente"."id" < "cliente_carro"."cliente_id"
+
+Ref "fk_cliente_carro_carro":"carro"."id" < "cliente_carro"."carro_id"
+
+Ref "fk_estacionamento_carro_cliente":"cliente_carro"."id" < "estacionamento"."cliente_carro_id"
+
+Ref "fk_vaga_tipo":"tipo"."id" < "vaga"."tipo_id"
+
+Ref "fk_estacionamento_vaga":"vaga"."id" < "estacionamento"."vaga_id"
