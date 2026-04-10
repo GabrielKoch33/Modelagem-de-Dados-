@@ -1,0 +1,71 @@
+// Uma loja virtual vende produtos de vários vendedores. 
+// Cada produto pertence a uma categoria que pode ter subcategorias. 
+// Clientes fazem pedidos com vários produtos.
+// Cada produto em um pedido tem quantidade e preço no momento da compra. 
+// Um cliente pode avaliar um produto com nota e comentário após a compra.
+
+table vendedores {
+  id_vendedor integer [pk, not null, increment]
+  nome varchar(30) [not null]
+}
+table fornecedor_produto{
+  id_fornecedor integer [pk, not null, increment]
+  id_vendedor integer [not null]
+  id_produto integer [not null]
+}
+table produtos {
+  id_produto  integer [pk,not null, increment]
+  nome varchar(20) [not null]
+  id_categoria varchar (50) [not null]
+}
+Table categoria { 
+  id_cat_pai integer [pk,increment,not null]
+  nome_categoria varchar(50) [not null]
+  id_cat_filha integer [not null]
+}
+table pedidos{
+  id_pedido integer [pk, increment,not null]
+  id_prod integer [not null]
+  id_cliente integer [not null] 
+}
+
+table valor_pedido{
+  id_pedido integer [increment,not null]
+  quantidade_prod integer [not null]
+  preco float [not null]  
+}
+
+table clientes{
+  id_cliente integer [not null, pk, increment]
+  nome varchar(30) [not null]
+}
+table avaliacoes{
+  id_avaliacao integer [not null,pk,increment]
+  id_pedido integer [not null]
+  id_produto integer [not null]
+  id_cliente integer [not null]
+  nota_do_produto float
+  comentário text 
+}
+
+Ref: "vendedores"."id_vendedor" < "fornecedor_produto"."id_vendedor"
+
+Ref: "produtos"."id_produto" < "fornecedor_produto"."id_produto"
+
+Ref: "categoria"."id_cat_pai" < "produtos"."id_categoria"
+
+Ref: "clientes"."id_cliente" < "pedidos"."id_cliente"
+
+Ref: "produtos"."id_produto" < "pedidos"."id_prod"
+
+Ref: "categoria"."id_cat_pai" < "categoria"."id_cat_filha"
+
+Ref: "pedidos"."id_pedido" - "valor_pedido"."id_pedido"
+
+
+
+Ref: "pedidos"."id_prod" < "avaliacoes"."id_produto"
+
+Ref: "pedidos"."id_cliente" < "avaliacoes"."id_cliente"
+
+Ref: "pedidos"."id_pedido" < "avaliacoes"."id_pedido"
