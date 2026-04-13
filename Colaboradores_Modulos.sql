@@ -8,6 +8,8 @@
 // módulo, os conteúdos devem ficar disponíveis para cada colaborador e deve
 // ser registrada a data e horário de início e fim de cada conteúdo para emissão
 // do certificado de participação.
+
+  
 table colaborador{
   id_colaborador integer [pk,increment,not null]
   cpf char(11) [not null]
