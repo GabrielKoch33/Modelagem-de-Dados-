@@ -1,57 +1,65 @@
-// A empresa disponibilizará os módulos com a descrição, o
-// objetivo e a carga horária total. 
-//Cada módulo terá conteúdos que devem ter a
-// descrição, o objetivo e a carga horária.
-// O colaborador poderá inscrever-se em mais de um módulo e os
-// conteúdos podem ser oferecidos em mais de um módulo. 
-//Ao inscrever-se no
-// módulo, os conteúdos devem ficar disponíveis para cada colaborador e deve
-// ser registrada a data e horário de início e fim de cada conteúdo para emissão
-// do certificado de participação.
-
-  
-table colaborador{
-  id_colaborador integer [pk,increment,not null]
+Table colaborador {
+  id_colaborador integer [pk, increment, not null]
   cpf char(11) [not null]
-  nome varchar (100) [not null]
-  telefone phone (11) [not null]
-  email email [not null]
+  nome varchar(100) [not null]
+  telefone varchar(11) [not null]
+  email varchar(100) [not null]
 }
-Table colaboradorInscrito {
-  id_colaborador_moldulo integer [pk,increment,not null]
-  id_colaborador integer [not null]
-  id_modulo integer [not null]
-}
-table modulos{
-  id_modulo integer [pk,increment,not null]
-  descricao_modulo text [not null]
-  objetivo text [not null]
-  cargaHorariaHoras decimal (10,2) 
-}
-table conteudosNoModulo {
-  id_contpormodulo integer [pk,increment,not null]
-  id_modulo integer [not null]
-  id_conteudo  integer [not null]
-}
-table conteudo {
-  id_conteudo integer [pk,increment,not null]
+
+Table modulo {
+  id_modulo integer [pk, increment, not null]
   descricao text [not null]
   objetivo text [not null]
-  cargaHorariaHoras decimal (10,2) 
+  carga_horaria decimal(10,2) [not null]
 }
-table emissaoCertificado{
-  id_certificado integer [pk,increment,not null]
+
+Table conteudo {
+  id_conteudo integer [pk, increment, not null]
+  descricao text [not null]
+  objetivo text [not null]
+  carga_horaria decimal(10,2) [not null]
+}
+
+// N:M colaborador <-> modulo
+Table inscricao {
+  id_inscricao integer [pk, increment, not null]
+  id_colaborador integer [not null]
+  id_modulo integer [not null]
+  dt_inscricao timestamp [not null]
+}
+
+// N:M modulo <-> conteudo
+Table modulo_conteudo {
+  id integer [pk, increment, not null]
   id_modulo integer [not null]
   id_conteudo integer [not null]
-  dt_inicio date [not null]
-  dt_fim date [not null]
 }
 
+// TERNÁRIO: colaborador + modulo + conteudo
+// registra progresso individual de cada conteúdo
+Table progresso {
+  id_progresso integer [pk, increment, not null]
+  id_colaborador integer [not null]
+  id_modulo integer [not null]
+  id_conteudo integer [not null]
+  dt_inicio timestamp [not null]
+  dt_fim timestamp
+}
 
-Ref: "colaborador"."id_colaborador" < "colaboradorInscrito"."id_colaborador"
+// certificado gerado ao concluir o módulo inteiro
+Table certificado {
+  id_certificado integer [pk, increment, not null]
+  id_colaborador integer [not null]
+  id_modulo integer [not null]
+  dt_emissao timestamp [not null]
+}
 
-Ref: "modulos"."id_modulo" < "colaboradorInscrito"."id_modulo"
-
-Ref: "modulos"."id_modulo" < "conteudosNoModulo"."id_modulo"
-
-Ref: "conteudo"."id_conteudo" < "conteudosNoModulo"."id_conteudo"
+Ref: colaborador.id_colaborador < inscricao.id_colaborador
+Ref: modulo.id_modulo < inscricao.id_modulo
+Ref: modulo.id_modulo < modulo_conteudo.id_modulo
+Ref: conteudo.id_conteudo < modulo_conteudo.id_conteudo
+Ref: colaborador.id_colaborador < progresso.id_colaborador
+Ref: modulo.id_modulo < progresso.id_modulo
+Ref: conteudo.id_conteudo < progresso.id_conteudo
+Ref: colaborador.id_colaborador < certificado.id_colaborador
+Ref: modulo.id_modulo < certificado.id_modulo
