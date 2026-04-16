@@ -20,7 +20,7 @@ Table conteudo {
   carga_horaria decimal(10,2) [not null]
 }
 
-// N:M colaborador <-> modulo
+// N:M colaborador / modulo
 Table inscricao {
   id_inscricao integer [pk, increment, not null]
   id_colaborador integer [not null]
@@ -28,7 +28,7 @@ Table inscricao {
   dt_inscricao timestamp [not null]
 }
 
-// N:M modulo <-> conteudo
+// N:M modulo / conteudo
 Table modulo_conteudo {
   id integer [pk, increment, not null]
   id_modulo integer [not null]
@@ -36,7 +36,6 @@ Table modulo_conteudo {
 }
 
 // TERNÁRIO: colaborador + modulo + conteudo
-// registra progresso individual de cada conteúdo
 Table progresso {
   id_progresso integer [pk, increment, not null]
   id_colaborador integer [not null]
